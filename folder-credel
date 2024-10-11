@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Function to check if a folder is empty
+is_folder_empty() {
+  if [ -z "$(ls -A "$1")" ]; then
+    return 0  # Folder is empty
+  else
+    return 1  # Folder is not empty
+  fi
+}
+
+# Prompt the user to enter the folder name
+read -p "Enter the folder name: " folder_name
+
+# Loop to create the folder 5 times with a number appended
+for i in {1..5}
+do
+  new_folder="${folder_name}_$i"
+  mkdir "$new_folder"
+  echo "Created folder: $new_folder"
+  
+  # Ask the user if they want to rename the folder
+  read -p "Do you want to rename $new_folder? (y/n): " rename_choice
+  if [[ $rename_choice == "y" || $rename_choice == "Y" ]]; then
+    read -p "Enter the new name for the folder: " new_name
+    mv "$new_folder" "$new_name"
+    echo "Renamed $new_folder to $new_name"
+    new_folder=$new_name
+  fi
+  
+  # Check if the folder is empty
+  if is_folder_empty "$new_folder"; then
+    read -p "The folder $new_folder is empty. Do you want to delete it? (y/n): " delete_choice
+    if [[ $delete_choice == "y" || $delete_choice == "Y" ]]; then
+      rmdir "$new_folder"
+      echo "Deleted empty folder: $new_folder"
+    fi
+  fi
+done
